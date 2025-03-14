@@ -1,27 +1,28 @@
 ﻿using E_commerce.DataAccess.Data;
 using E_commerce.DataAccess.Repository.IRepository;
-using E_commerce.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace E_commerce.DataAccess.Repository
 {
-    public class CategoryRepository : Repository<Category>,ICategoryRepository
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _db;
-        public CategoryRepository(ApplicationDbContext db):base(db)
+        public UnitOfWork(ApplicationDbContext db) 
         {
             _db = db;
+            Category = new CategoryRepository(_db);
         }
-        
 
-        public void Update(Category category)
+        public ICategoryRepository Category { get; private set;}
+
+        public void Save()
         {
-            _db.Categories.Update(category);
+            _db.SaveChanges();
+            
         }
     }
 }

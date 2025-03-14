@@ -3,18 +3,18 @@ using E_commerce.Models;
 using Microsoft.AspNetCore.Mvc;
 using E_commerce.DataAccess.Repository.IRepository;
 
-namespace E_commerce.Controllers
+namespace E_commerce.Areas.Admin.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly ICategoryRepository _categoryRepo;
-        public CategoryController(ICategoryRepository categoryRepo)
+        private readonly IUnitOfWork _unitOfWork;
+        public CategoryController(IUnitOfWork unitOfWork)
         {
-           _categoryRepo = categoryRepo;
+           _unitOfWork = unitOfWork;
         }
         public IActionResult Index()
         {
-            List<Category> objCategoryList=_categoryRepo.GetAll().ToList();
+            List<Category> objCategoryList=_unitOfWork.Category.GetAll().ToList();
             return View(objCategoryList);
         }
         public IActionResult Create()
@@ -26,8 +26,8 @@ namespace E_commerce.Controllers
         {
             if (ModelState.IsValid)
             {
-               _categoryRepo.Add(category);
-               _categoryRepo.Save();
+               _unitOfWork.Category.Add(category);
+               _unitOfWork.Save();
                 TempData["success"] = "Category has been added successfully";
                 return RedirectToAction("Index","Category");
             }
@@ -40,7 +40,7 @@ namespace E_commerce.Controllers
             {
                 return NotFound();
             }
-            var category =_categoryRepo.Get(obj=>obj.CategoryId==id);
+            var category =_unitOfWork.Category.Get(obj=>obj.CategoryId==id);
             if (category == null)
             {
                 return NotFound();
@@ -53,8 +53,8 @@ namespace E_commerce.Controllers
         {
             if (ModelState.IsValid)
             {
-               _categoryRepo.Update(category);
-               _categoryRepo.Save();
+               _unitOfWork.Category.Update(category);
+               _unitOfWork.Save();
                 TempData["success"] = "Category has been updated successfully";
                 return RedirectToAction("Index", "Category");
             }
@@ -66,7 +66,7 @@ namespace E_commerce.Controllers
             {
                 return NotFound();
             }
-            var category = _categoryRepo.Get(obj => obj.CategoryId == id);
+            var category = _unitOfWork.Category.Get(obj => obj.CategoryId == id);
             if (category == null)
             {
                 return NotFound();
@@ -78,13 +78,13 @@ namespace E_commerce.Controllers
         public IActionResult DeletePost(int? id)
         {
             
-            var category =_categoryRepo.Get(obj => obj.CategoryId == id);
+            var category =_unitOfWork.Category.Get(obj => obj.CategoryId == id);
             if (category == null)
             {
                 return NotFound();
             }
-           _categoryRepo.Remove(category);
-           _categoryRepo.Save();
+           _unitOfWork.Category.Remove(category);
+           _unitOfWork.Save();
             TempData["success"] = "Category has been deleted successfully";
             return RedirectToAction("Index", "Category");
         }
