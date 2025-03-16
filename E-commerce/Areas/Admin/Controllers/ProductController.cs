@@ -1,5 +1,6 @@
 ﻿using E_commerce.DataAccess.Repository.IRepository;
 using E_commerce.Models;
+using E_commerce.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -21,13 +22,19 @@ namespace E_commerce.Areas.Admin.Controllers
         }
         public IActionResult Create()
         {
-            IEnumerable<SelectListItem> CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
+            IEnumerable<SelectListItem> categoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
             {
                 Text = u.Name,
                 Value = u.CategoryId.ToString()
             });
-            ViewBag.CategoryList = CategoryList;
-            return View();
+            //ViewBag.CategoryList = CategoryList;
+            ProductVM productVM = new()
+            { 
+                CategoryList = categoryList,
+                Product=new Product()
+            
+            };
+            return View(productVM);
         }
         [HttpPost]
         public IActionResult Create(Product product)
@@ -39,7 +46,24 @@ namespace E_commerce.Areas.Admin.Controllers
                 TempData["success"] = "Product has been added successfully";
                 return RedirectToAction("Index", "Product");
             }
-            return View();
+            else
+            {
+                IEnumerable<SelectListItem> categoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
+                {
+                    Text = u.Name,
+                    Value = u.CategoryId.ToString()
+                });
+                //ViewBag.CategoryList = CategoryList;
+                ProductVM productVM = new()
+                {
+                    CategoryList = categoryList,
+                    Product = new Product()
+
+                };
+                return View(productVM);
+
+            }
+            
         }
 
         public IActionResult Edit(int? id)
